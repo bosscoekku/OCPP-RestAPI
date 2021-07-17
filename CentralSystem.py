@@ -111,3 +111,117 @@ class CentralSystem:
                 logging.info(f"The Charger {cp.id} got unlock connector with {connector_id} was {response.status} ")
                 return response.status
         raise ValueError(f"The Charger {chargerId} not connected!")
+        
+    async def reset(self, chargerId : str,reset_type: str):
+        
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be reset ")
+                logging.info(f"The Charger {cp.id} will be reset message with chargerId      : {chargerId}")
+                response = await cp.reset(reset_type)
+                logging.info(f"The Charger {cp.id} got be reset message {reset_type} was {response.status} ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
+
+    async def reservenow(self, chargerId : str,connectorId: int,expiryDate : str,idTag:str,reservationId:int):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be reservenow ")
+                logging.info(f"The Charger {cp.id} will be reservenow message with chargerId      : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be reservenow message with connectorId    : {connectorId}")
+                logging.info(f"The Charger {cp.id} will be reservenow message with expiryDate     : {expiryDate}")
+                logging.info(f"The Charger {cp.id} will be reservenow message with idTag          : {idTag}")
+                logging.info(f"The Charger {cp.id} will be reservenow message with reservationId  : {reservationId}")
+                response = await cp.reservenow(connectorId,expiryDate,idTag,reservationId)
+                logging.info(f"The Charger {cp.id} got be reservenow message {chargerId} was {response.status} ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
+        
+    async def cancelreservenow(self, chargerId : str,reservationId:int):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be cancel reservenow ")
+                logging.info(f"The Charger {cp.id} will be cancel reservenow message with chargerId      : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be cancel reservenow message with reservationId  : {reservationId}")
+                response = await cp.cancelreservenow(reservationId)
+                logging.info(f"The Charger {cp.id} got be cancel reservenow message {chargerId} was {response.status} ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
+    
+    async def setdatatransfer(self, chargerId : str,vendorId:str, messageId : str,data:str):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be setdatatransfer ")
+                logging.info(f"The Charger {cp.id} will be setdatatransfer message with chargerId  : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be setdatatransfer message with vendorId   : {vendorId}")
+                logging.info(f"The Charger {cp.id} will be setdatatransfer message with messageId  : {messageId}")
+                logging.info(f"The Charger {cp.id} will be setdatatransfer message with data       : {data}")
+                response = await cp.setdatatransfer(vendorId,messageId,data)
+                logging.info(f"The Charger {cp.id} got be setdatatransfer message {chargerId} was {response.status}  ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
+        
+    async def getdatatransfer(self, chargerId : str,vendorId:str, messageId : str):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be getdatatransfer ")
+                logging.info(f"The Charger {cp.id} will be getdatatransfer message with chargerId  : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be getdatatransfer message with vendorId   : {vendorId}")
+                logging.info(f"The Charger {cp.id} will be getdatatransfer message with messageId  : {messageId}")
+                response = await cp.getdatatransfer(vendorId,messageId)
+                logging.info(f"The Charger {cp.id} got be getdatatransfer message {chargerId} was {response.status} with {response.data} ")
+                return response.status,response.data
+        raise ValueError(f"The Charger {chargerId} not connected!")
+    
+    async def updatefirmware(self, chargerId : str,location:str, retries : int,retrieveDate:str,retryInterval:int):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be updatefirmware ")
+                logging.info(f"The Charger {cp.id} will be updatefirmware message with chargerId    : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be updatefirmware message with location     : {location}")
+                logging.info(f"The Charger {cp.id} will be updatefirmware message with retries      : {retries}")
+                logging.info(f"The Charger {cp.id} will be updatefirmware message with retrieveDate : {retrieveDate}")
+                logging.info(f"The Charger {cp.id} will be updatefirmware message with retryInterval: {retryInterval}")
+                response = await cp.updatefirmware(location,retries,retrieveDate,retryInterval)
+                logging.info(f"The Charger {cp.id} got be updatefirmware message {chargerId} was {response} ")
+                return response
+        raise ValueError(f"The Charger {chargerId} not connected!")
+        
+    async def getcompositeschedule(self, chargerId : str,connectorId:int, duration : int,chargingRateUnit:str =None):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be getcompositeschedule ")
+                logging.info(f"The Charger {cp.id} will be getcompositeschedule message with chargerId       : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be getcompositeschedule message with connectorId     : {connectorId}")
+                logging.info(f"The Charger {cp.id} will be getcompositeschedule message with duration        : {duration}")
+                logging.info(f"The Charger {cp.id} will be getcompositeschedule message with chargingRateUnit: {chargingRateUnit}")
+                response = await cp.getcompositeschedule(connectorId,duration,chargingRateUnit)
+                logging.info(f"The Charger {cp.id} got be getcompositeschedule  message {chargerId} was {response} ")
+                return response.status,response.connector_id,response.schedule_start,response.charging_schedule
+        raise ValueError(f"The Charger {chargerId} not connected!")
+    
+    async def setchargingprofile(self, chargerId : str,connectorId:int, csChargingProfiles : dict):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be setchargingprofile")
+                logging.info(f"The Charger {cp.id} will be setchargingprofile message with chargerId          : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be setchargingprofile message with connectorId        : {connectorId}")
+                logging.info(f"The Charger {cp.id} will be setchargingprofile message with csChargingProfiles : {csChargingProfiles}")
+                response = await cp.setchargingprofile(connectorId,csChargingProfiles)
+                logging.info(f"The Charger {cp.id} got be setchargingprofile  message {chargerId} was {response} ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
+    
+    async def clearchargingprofile(self, chargerId : str,data_id:int, connectorId : int,chargingProfilePurpose : str,stackLevel:int):
+        for cp in self._chargers:
+            if cp.id == chargerId:
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile")
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile message with chargerId               : {chargerId}")
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile message with id                      : {data_id}")
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile message with connectorId             : {connectorId}")
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile message with chargingProfilePurpose  : {chargingProfilePurpose}")
+                logging.info(f"The Charger {cp.id} will be clearchargingprofile message with stackLevel              : {stackLevel}")
+                response = await cp.clearchargingprofile(data_id,connectorId,chargingProfilePurpose,stackLevel)
+                logging.info(f"The Charger {cp.id} got be clearchargingprofile  message {chargerId} was {response} ")
+                return response.status
+        raise ValueError(f"The Charger {chargerId} not connected!")
