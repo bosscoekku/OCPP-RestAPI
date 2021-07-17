@@ -33,15 +33,175 @@ logging.getLogger('').addHandler(console)
 
 
 VERSION = "0.0.1"
-PORT1 = 9000    # EV CHARGER
-PORT2 = 8000    # WEBSERVER
+PORT_EV = 9001    # EV CHARGER
+PORT_API = 8001    # WEBSERVER
 SERVERADDRESS = '0.0.0.0'
 APIKEY = '6ICTtgQpX5FOmyEcRPbbhkDVsAqo5zRW'
 
+async def clearchargingprofile(request):
+    """ HTTP handler for clear charging profile a charge points. """
+    data = await request.json()
+    print(data)
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response_status = await csms.clearchargingprofile(data["chargerId"],data["id"],data["connectorId"],data["chargingProfilePurpose"],data["stackLevel"])
+        response_obj = { 'status' : response_status}
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""
-                Function for HTTP API
-"""""""""""""""""""""""""""""""""""""""""""""""""""
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def setchargingprofile(request):
+    """ HTTP handler for Set charging profile a charge points. """
+    data = await request.json()
+    print(data)
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response_status = await csms.setchargingprofile(data["chargerId"],data["connectorId"],data["csChargingProfiles"])
+        response_obj = { 'status' : response_status}
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def getcompositeschedule(request):
+    """ HTTP handler for get composite schedule a charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response_status,response_connector_id,response_schedule_start,response_charging_schedule = await csms.getcompositeschedule(data["chargerId"],data["connectorId"],data["duration"],data["chargingRateUnit"])
+        response_obj = { 'status' : response_status,'connector_id' : response_connector_id,'schedule_start' : response_schedule_start,'charging_schedule' : response_charging_schedule}
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def updatefirmware(request):
+    """ HTTP handler for update fw a charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response_status = await csms.updatefirmware(data["chargerId"],data["location"],data["retries"],data["retrieveDate"],data["retryInterval"])
+        response_obj = { 'status' : 'Accept'}
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def getdatatransfer(request):
+    """ HTTP handler for update qr code a charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response_status,response_data = await csms.getdatatransfer(data["chargerId"],data["vendorId"],data["messageId"])
+        response_obj = { 'status' : response_status,'data' : response_data }
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def setdatatransfer(request):
+    """ HTTP handler for update qr code a charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response = await csms.setdatatransfer(data["chargerId"],data["vendorId"],data["messageId"],data["data"])
+        response_obj = { 'status' : response }
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def cancelreservenow(request):
+    """ HTTP handler for reset all charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response = await csms.cancelreservenow(data["chargerId"],data["reservationId"])
+        response_obj = { 'status' : response }
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def reservenow(request):
+    """ HTTP handler for reset all charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response = await csms.reservenow(data["chargerId"],data["connectorId"],data["expiryDate"],data["idTag"],data["reservationId"])
+        response_obj = { 'status' : response }
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+    
+async def reset(request):
+    """ HTTP handler for reset all charge points. """
+    data = await request.json()
+    csms = request.app["csms"]
+    if data["apikey"]!=APIKEY:
+        logging.error("API key is not valid")
+        response_obj = { 'status' : 'failed', 'reason': f'API key is not valid {data["apikey"]}' }
+        return web.Response(text=json.dumps(response_obj), status=404)
+    try:
+        response = await csms.reset(data["chargerId"],data["type"])
+        response_obj = { 'status' : response }
+    except ValueError as e:
+        logging.error(f"Failed to reset  charger: {e}")
+        response_obj = { 'status' : 'failed', 'reason': str(e) }
+        return web.Response(text=json.dumps(response_obj), status=404)
+
+    return web.Response(text=json.dumps(response_obj), status=200)
+
 async def unlock_connector(request):
     """ HTTP handler for unlock_connector of a charge points. """
     data = await request.json()
@@ -174,10 +334,10 @@ async def on_connect(websocket, path, csms):
 
 async def create_websocket_server(csms: CentralSystem):
     handler = partial(on_connect, csms=csms)
-    logging.info(f"The CentralSystem EV {SERVERADDRESS} is available at port {PORT1}.")
+    logging.info(f"The CentralSystem EV {SERVERADDRESS} is available at port {PORT_EV}.")
     return await websockets.serve(handler, 
                                  SERVERADDRESS, 
-                                 PORT1, 
+                                 PORT_EV, 
                                  subprotocols=["ocpp1.6"] , 
                                  ping_interval = None)
 
@@ -191,13 +351,22 @@ async def create_http_server(csms: CentralSystem):
     app.add_routes([web.post("/changeavailability", change_availability)])
     app.add_routes([web.post("/tiggermsg", trigger_message)])
     app.add_routes([web.post("/unlockconnector", unlock_connector)])
+    app.add_routes([web.post("/reset", reset)])
+    app.add_routes([web.post("/reservenow", reservenow)])
+    app.add_routes([web.post("/cancelreservenow", cancelreservenow)])
+    app.add_routes([web.post("/setdatatransfer", setdatatransfer)])
+    app.add_routes([web.post("/getdatatransfer", getdatatransfer)])
+    app.add_routes([web.post("/updatefirmware", updatefirmware)])
+    app.add_routes([web.post("/getcompositeschedule", getcompositeschedule)])
+    app.add_routes([web.post("/setchargingprofile", setchargingprofile)])
+    app.add_routes([web.post("/clearchargingprofile",clearchargingprofile)])
 
     app["csms"] = csms
     runner = web.AppRunner(app)
     await runner.setup()
 
-    site = web.TCPSite(runner, SERVERADDRESS, PORT2)
-    logging.info(f"The HTTP API {SERVERADDRESS} is available at port {PORT2}.")
+    site = web.TCPSite(runner, SERVERADDRESS, PORT_API)
+    logging.info(f"The HTTP API {SERVERADDRESS} is available at port {PORT_API}.")
     return site
 
 async def main():
@@ -210,4 +379,13 @@ async def main():
     await asyncio.wait([websocket_server.wait_closed(), http_server.start()])
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        # asyncio.run() is used when running this example with Python 3.7 and
+        # higher.
+        asyncio.run(main())
+    except AttributeError:
+        # For Python 3.6 a bit more code is required to run the main() task on
+        # an event loop.
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+        loop.close()
